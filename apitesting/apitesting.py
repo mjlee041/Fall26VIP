@@ -1,6 +1,5 @@
 import os
 import requests
-import time
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
@@ -54,11 +53,11 @@ def get_devices():
         device = device.get('name')
         print(device)
 
-def get_readings(id):
+def get_water_level(id):
 
-    hourago = datetime.now() - timedelta(hours=1)
+    an_hour_ago = datetime.now() - timedelta(hours=1)
 
-    start = int(hourago.timestamp())
+    start = int(an_hour_ago.timestamp())
     end = int(datetime.now().timestamp())
 
     params = {
@@ -76,5 +75,27 @@ def get_readings(id):
     
     print(stage_list)
 
+def get_air_temp(id):
+    an_hour_ago = datetime.now() - timedelta(hours=1)
 
-get_readings("867c5ecb-6b7b-4d78-8c11-933d71704df0")
+    start = int(an_hour_ago.timestamp())
+    end = int(datetime.now().timestamp())
+
+    params = {
+        "id": id,
+        "start": start,
+        "end": end
+    }
+
+    response = requests.get(f"{BASE_URL}/site/messages", headers=headers, params=params)
+    messages = response.json()
+    temp_list = []
+    for message in messages:
+        temp = message.get('senix').get('temp')
+        temp_list.append(temp)
+    
+    print(temp_list)
+
+# Examples
+# get_water_level("867c5ecb-6b7b-4d78-8c11-933d71704df0")
+# get_air_temp("867c5ecb-6b7b-4d78-8c11-933d71704df0")
